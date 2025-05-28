@@ -8,6 +8,9 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios"
 import { userInterface } from "@/app/types/user.types";
 import userUserStore from "@/app/store/userStore"
+import { successAlert, errorAlert } from '@/app/utils/alert';
+
+
 
 export default function Home() {
   const router = useRouter();
@@ -23,7 +26,7 @@ export default function Home() {
         console.log(response.data)
         router.push("/pages/customerPage")
     },
-    onError : (err : { request : { response : string}}) => alert(err.request.response)
+    onError : (err : { request : { response : string}}) => errorAlert(err.request.response)
   })
 
 
@@ -37,27 +40,33 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm">
-        <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
-        <div className="space-y-4">
-          <Input
-            type="text"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button className="w-full" onClick={handleLogin}>
-            Login
-          </Button>
-        </div>
+    <div className="min-h-screen flex flex-col bg-gray-100 relative">
+  <div className="absolute top-4 left-4 z-10">
+    <Button onClick={() => router.push("/")}>Back</Button>
+  </div>
+  <div className="flex flex-1 items-center justify-center">
+    <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-sm">
+      <h2 className="text-2xl font-semibold mb-6 text-center">Login</h2>
+      <div className="space-y-4">
+        <Input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button className="w-full" onClick={handleLogin}>
+          Login
+        </Button>
       </div>
     </div>
+  </div>
+</div>
+
   );
 }

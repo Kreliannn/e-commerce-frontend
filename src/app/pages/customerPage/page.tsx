@@ -9,7 +9,7 @@ import axios from "axios";
 import { getProductInterrface, productInterrface } from "@/app/types/product.type";
 
 import { OrderButton } from "./components/orderButton";
-
+import { successAlert, errorAlert } from '@/app/utils/alert';
 
 
 
@@ -37,7 +37,7 @@ export default function Home() {
   }, [data])
 
   return (
-    <div className="min-h-screen bg-gray-100 ">
+    <div className="min-h-screen bg-gray-100 overflow-auto">
       <CustomerNavbar />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5 p-2">
         {products.map((product) => (

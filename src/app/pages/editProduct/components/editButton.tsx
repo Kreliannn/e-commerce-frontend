@@ -15,7 +15,7 @@ import { getProductInterrface } from "@/app/types/product.type"
 import { Label } from "@/components/ui/label"
 import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
-
+import { successAlert, errorAlert } from '@/app/utils/alert';
 type SizesType = {
   xs: number,
   s: number,
@@ -57,18 +57,18 @@ export function EditButton({ product, setProduct} : { product : getProductInterr
     mutationFn : (data : getProductInterrface) => axios.patch("http://localhost:5000/product/update", { product :  data}),
     onSuccess : (response : { data : getProductInterrface[]} ) => {
         setProduct(response.data)
-        alert("updated ")
+        successAlert("updated ")
     },
-    onError : (err : { request : { response : string}}) => alert(err.request.response)
+    onError : (err : { request : { response : string}}) => errorAlert(err.request.response)
   })
 
   const mutationDelete = useMutation({
     mutationFn : () => axios.delete("http://localhost:5000/product/" + product._id),
     onSuccess : (response : { data : getProductInterrface[]} ) => {
         setProduct(response.data)
-        alert("deleted ")
+        successAlert("deleted ")
     },
-    onError : (err : { request : { response : string}}) => alert(err.request.response)
+    onError : (err : { request : { response : string}}) => errorAlert(err.request.response)
   })
 
 

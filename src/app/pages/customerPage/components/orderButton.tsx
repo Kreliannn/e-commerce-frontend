@@ -18,7 +18,7 @@ import userStore from "@/app/store/userStore"
 import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
 import { orderInterface } from "@/app/types/order.types"
-
+import { successAlert, errorAlert } from '@/app/utils/alert';
 export function OrderButton({ product }: { product: getProductInterrface }) {
   const [open, setOpen] = useState(false)
 
@@ -49,10 +49,10 @@ export function OrderButton({ product }: { product: getProductInterrface }) {
   const mutation = useMutation({
     mutationFn : (data : orderInterface) => axios.post("http://localhost:5000/order/create", { order :  data}),
     onSuccess : (response : { data : string} ) => {
-        alert(response.data)
+        successAlert(response.data)
         setOpen(false)
     },
-    onError : (err : { request : { response : string}}) => alert(err.request.response)
+    onError : (err : { request : { response : string}}) => errorAlert(err.request.response)
   })
 
 

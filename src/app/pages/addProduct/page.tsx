@@ -8,6 +8,7 @@ import useUpload from '@/app/utils/upload';
 import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { productInterrface } from '@/app/types/product.type';
+import { successAlert, errorAlert } from '@/app/utils/alert';
 
 export default function AddProduct() {
   const [name, setName] = useState('');
@@ -43,9 +44,9 @@ export default function AddProduct() {
   const mutation = useMutation({
     mutationFn : (data : productInterrface) => axios.post("http://localhost:5000/product/create", { product :  data}),
     onSuccess : (response : { data : string} ) => {
-        alert(response.data)
+        successAlert(response.data)
     },
-    onError : (err : { request : { response : string}}) => alert(err.request.response)
+    onError : (err : { request : { response : string}}) => errorAlert(err.request.response)
   })
 
 
@@ -71,13 +72,13 @@ export default function AddProduct() {
       const uploadResult = await useUpload(selectedFile, "image");
       
       if (uploadResult === "file type error") {
-        alert("File type is not valid. Please select an image file.");
+        errorAlert("File type is not valid. Please select an image file.");
         setSubmitting(false);
         return;
       }
       
       if (uploadResult === "file size error") {
-        alert("File size is too large. Please select a smaller image.");
+        errorAlert("File size is too large. Please select a smaller image.");
         setSubmitting(false);
         return;
       }
@@ -136,7 +137,7 @@ export default function AddProduct() {
 
     } catch (error) {
       console.error("Submit error:", error);
-      alert("Failed to add product");
+      errorAlert("Failed to add product");
     } finally {
       setSubmitting(false);
     }

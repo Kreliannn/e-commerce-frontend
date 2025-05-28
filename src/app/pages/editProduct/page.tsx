@@ -31,7 +31,7 @@ export default function Home() {
     }, [data])
 
   return (
-    <div className="min-h-screen bg-gray-100 ">
+    <div className="min-h-screen bg-gray-100 overflow-auto">
         <Navbar />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-5 p-2">
         {products.map((product) => (
