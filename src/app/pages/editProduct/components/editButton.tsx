@@ -62,6 +62,16 @@ export function EditButton({ product, setProduct} : { product : getProductInterr
     onError : (err : { request : { response : string}}) => alert(err.request.response)
   })
 
+  const mutationDelete = useMutation({
+    mutationFn : () => axios.delete("http://localhost:5000/product/" + product._id),
+    onSuccess : (response : { data : getProductInterrface[]} ) => {
+        setProduct(response.data)
+        alert("deleted ")
+    },
+    onError : (err : { request : { response : string}}) => alert(err.request.response)
+  })
+
+
 
 
   const handleSubmit = () => {
@@ -142,7 +152,12 @@ export function EditButton({ product, setProduct} : { product : getProductInterr
             />
         </div>
         ))}
+     
     </div>
+
+        <Button variant={"destructive"} onClick={() => mutationDelete.mutate()}>
+            delete Product
+        </Button>
     </div>
 
 

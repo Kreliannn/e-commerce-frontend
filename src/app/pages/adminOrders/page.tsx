@@ -30,8 +30,8 @@ export default function SalesTable() {
   const mutation = useMutation({
     mutationFn : (data : getOrderInterface) => axios.patch("http://localhost:5000/order/update", { order :  data}),
     onSuccess : (response : { data : getOrderInterface[]} ) => {
-        console.log("changes")
-        setorders(response.data)
+      
+        setorders(response.data.filter(( item : getOrderInterface) => item.status == "pending"))
     },
     onError : (err : { request : { response : string}}) => alert(err.request.response)
   })

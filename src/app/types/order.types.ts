@@ -10,6 +10,7 @@ export interface orderInterface {
     status : string,
     date : string,
     modeOfPayment : string,
+    product_id : string,
 }
 
 export interface getOrderInterface {
@@ -25,4 +26,5 @@ export interface getOrderInterface {
     status : string,
     date : string,
     modeOfPayment : string,
+    product_id : string,
 }

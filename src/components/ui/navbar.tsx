@@ -2,17 +2,22 @@
 
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-
+import Image from "next/image"
 export default function Navbar() {
   const router = useRouter()
 
   return (
 
-      <nav className="w-full bg-white shadow px-8 py-4 flex justify-between items-center">
-        {/* Logo */}
-        <div className="text-xl font-bold text-gray-800">
-          MyShop
-        </div>
+    <nav className="w-full bg-white shadow px-8 py-1 flex justify-between items-center ">
+      {/* Logo Image */}
+      <div className="relative w-32 h-15 rounded-full">
+        <Image
+          src="/logo.jpg" // Place your image in public/logo.png
+          alt="Logo"
+          fill
+          className="object-contain rounded-full"
+        />
+      </div>
 
         {/* Navigation Links */}
         <div className="space-x-4">
@@ -22,11 +27,11 @@ export default function Navbar() {
           <Button variant="ghost" onClick={() => router.push("/pages/editProduct")}>
             Manage Product
           </Button>
-          <Button variant="ghost" onClick={() => router.push("/dashboard")}>
+          <Button variant="ghost" onClick={() => router.push("/pages/adminPage")}>
             Dashboard
           </Button>
           <Button variant="ghost" onClick={() => router.push("/pages/adminToship")}>
-            To Ship
+            In Proccess
           </Button>
           <Button variant="ghost" onClick={() => router.push("/pages/adminOrders")}>
             Orders

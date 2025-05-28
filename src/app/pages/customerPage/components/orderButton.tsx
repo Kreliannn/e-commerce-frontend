@@ -26,6 +26,7 @@ export function OrderButton({ product }: { product: getProductInterrface }) {
   const price = product.price
   const date = new Date().toISOString().split('T')[0];
   const status = 'pending'
+  const product_id = product._id
 
  
 
@@ -49,6 +50,7 @@ export function OrderButton({ product }: { product: getProductInterrface }) {
     mutationFn : (data : orderInterface) => axios.post("http://localhost:5000/order/create", { order :  data}),
     onSuccess : (response : { data : string} ) => {
         alert(response.data)
+        setOpen(false)
     },
     onError : (err : { request : { response : string}}) => alert(err.request.response)
   })
@@ -70,7 +72,8 @@ export function OrderButton({ product }: { product: getProductInterrface }) {
       quantity: quantity,                   // Number
       status: status,                      // 'pending'
       date: date,                         // YYYY-MM-DD string
-      modeOfPayment: paymentMode,         // 'COD' or 'GCASH'
+      modeOfPayment: paymentMode, 
+      product_id : product_id,        // 'COD' or 'GCASH'
     };
   
     mutation.mutate(orderObj)
