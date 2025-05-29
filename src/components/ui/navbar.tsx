@@ -27,6 +27,9 @@ export default function Navbar() {
           <Button variant="ghost" onClick={() => router.push("/pages/editProduct")}>
             Manage Product
           </Button>
+          <Button variant="ghost" onClick={() => router.push("/pages/editSoldOutProduct")}>
+            Sold Out Product
+          </Button>
           <Button variant="ghost" onClick={() => router.push("/pages/adminPage")}>
             Dashboard
           </Button>

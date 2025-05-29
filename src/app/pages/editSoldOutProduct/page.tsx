@@ -8,8 +8,7 @@ import CustomerNavbar from "@/components/ui/customerNavbar";
 import axios from "axios";
 import { getProductInterrface, productInterrface } from "@/app/types/product.type";
 import Navbar from "@/components/ui/navbar";
-import { EditButton } from "./components/editButton";
-
+import  EditButton  from "./components/editButton";
 
 export default function Home() {
   const router = useRouter();
@@ -28,22 +27,22 @@ export default function Home() {
     }
   }, [data])
 
-  // Filter products that have at least one size with stock > 0
-  const productsWithStock = products.filter(product => 
-    product.xs > 0 || 
-    product.s > 0 || 
-    product.m > 0 || 
-    product.l > 0 || 
-    product.xl > 0 || 
-    product.xxl > 0 || 
-    product.xxxl > 0
+  // Filter products that are out of stock for all sizes
+  const outOfStockProducts = products.filter(product => 
+    product.xs === 0 && 
+    product.s === 0 && 
+    product.m === 0 && 
+    product.l === 0 && 
+    product.xl === 0 && 
+    product.xxl === 0 && 
+    product.xxxl === 0
   );
 
   return (
     <div className="min-h-screen bg-gray-100 overflow-auto">
         <Navbar />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mb-5 p-2">
-        {productsWithStock.map((product) => (
+        {outOfStockProducts.map((product) => (
           <div key={product._id} className="bg-white rounded-xl shadow p-3 text-sm flex flex-col">
             <img
               src={product.image}

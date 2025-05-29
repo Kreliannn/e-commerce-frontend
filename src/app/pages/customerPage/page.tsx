@@ -12,7 +12,6 @@ import { OrderButton } from "./components/orderButton";
 import { successAlert, errorAlert } from '@/app/utils/alert';
 
 
-
 export default function Home() {
   const router = useRouter();
 
@@ -20,8 +19,7 @@ export default function Home() {
     const sizes = ["xs", "s", "m", "l", "xl", "xxl", "xxxl"];
     return sizes.filter((size) => product[size] > 0);
   };
-
-
+  
   const [products, setProducts] = useState<getProductInterrface[]>([])
 
   const { data } = useQuery({
@@ -36,11 +34,22 @@ export default function Home() {
     }
   }, [data])
 
+  // Filter products that have at least one size with stock > 0
+  const productsWithStock = products.filter(product => 
+    product.xs > 0 || 
+    product.s > 0 || 
+    product.m > 0 || 
+    product.l > 0 || 
+    product.xl > 0 || 
+    product.xxl > 0 || 
+    product.xxxl > 0
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 overflow-auto">
       <CustomerNavbar />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5 p-2">
-        {products.map((product) => (
+        {productsWithStock.map((product) => (
           <div
             key={product._id}
             className="bg-white rounded-xl shadow p-3 text-sm"
@@ -58,11 +67,10 @@ export default function Home() {
                 .map((size) => size.toUpperCase())
                 .join(", ")}
             </p>
-            <OrderButton product={product} />
+            <OrderButton product={product} setProduct={setProducts}/>
           </div>
         ))}
       </div>
-
-    </div>
+     </div>
   );
 }
