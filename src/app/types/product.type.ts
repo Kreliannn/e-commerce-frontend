@@ -1,4 +1,6 @@
 export interface productInterrface {
+    product_id : string,
+    color : string,
     name : string,
     price : number, 
     image : string,
@@ -14,6 +16,8 @@ export interface productInterrface {
 
 
 export interface getProductInterrface {
+    product_id : string,
+    color : string,
     _id : string,
     name : string,
     price : number, 
@@ -27,3 +31,4 @@ export interface getProductInterrface {
     xxxl : number
     
 }
+
