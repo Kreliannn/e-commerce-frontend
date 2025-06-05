@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { getProductInterrface, productInterrface } from "@/app/types/product.type"
 import userStore from "@/app/store/userStore"
 import { useMutation } from "@tanstack/react-query"
@@ -88,7 +88,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
       return
     }
 
-    if (!selectedSize) {
+    if (selectedSize == "all") {
       errorAlert("Please select a size")
       return
     }
@@ -114,6 +114,11 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
     mutation.mutate(orderObj)
   };
 
+  useEffect(() => {
+    setSelectedSize("all")
+    setQuantity(0)
+  }, [index])
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -128,14 +133,10 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
         </DialogHeader>
 
         <div className="space-y-4 mb-6">
-    
-
 
           <div className="w-full h-96 ">
             <CarouselImage images={images} setIndex={setIndex}/>
           </div>
-
-          
 
           <div className="flex w-full gap-5 mt-5 justify-center items-center">
               <div>
@@ -147,6 +148,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
                     <SelectValue placeholder="Select size" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="all"> select size </SelectItem>
                     {product[index].xs > 0 && (
                       <SelectItem value="xs">XS -- ({product[index].xs})</SelectItem>
                     )}
@@ -181,6 +183,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
                 <Input
                   id="quantity-input"
                   type="number"
+                  disabled={selectedSize == "all"}
                   min={1}
                   max={selectedSize ? getStockForSize(selectedSize) : undefined}
                   value={quantity}

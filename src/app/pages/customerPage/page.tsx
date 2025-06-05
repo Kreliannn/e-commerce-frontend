@@ -11,7 +11,7 @@ import { getProductInterrface, productInterrface } from "@/app/types/product.typ
 import { OrderButton } from "./components/orderButton";
 import { successAlert, errorAlert } from '@/app/utils/alert';
 
-
+import { Badge } from "@/components/ui/badge";
 
 
 export default function Home() {
@@ -54,8 +54,10 @@ export default function Home() {
             />
             <h2 className="text-base font-semibold mb-1">{product[0].name}</h2>
             <p className="text-gray-600 mb-1">Price: ₱{product[0].price}</p>
-            <p className="text-gray-500 mb-3">
-            </p>
+            <div className="flex w-full gap-2 mb-2 ">
+              {product.map((item, index) => (  <Badge key={index} variant={"outline"} > {item.color} </Badge>))}
+            </div>
+            
             <OrderButton product={product} setProduct={setProducts}/>
           </div>
         ))}
