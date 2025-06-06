@@ -1,5 +1,6 @@
 "use client"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/ui/navbar";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -8,20 +9,36 @@ import { useState, useEffect } from "react";
 import { getOrderInterface } from "@/app/types/order.types";
 import { Badge } from "@/components/ui/badge";
 import ProductSalesChart from "./components/productSalesChart";
-
-
-
 import MonthlySalesChart from "./components/monthlySalesChart";
-
 
 export default function SalesTable() {
   const [orders, setOrders] = useState<getOrderInterface[]>([]);
-  
+  const [filteredOrders, setFilteredOrders] = useState<getOrderInterface[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string>("2025");
+  const [selectedMonth, setSelectedMonth] = useState<string>("all");
+  const [toggle, setToggle] = useState(true);
 
   const { data }: { data?: { data: getOrderInterface[] } } = useQuery({
     queryKey: ["order"],
     queryFn: (): Promise<{ data: getOrderInterface[] }> => axios.get("http://localhost:5000/orders/get")
   });
+
+  const years = ["2025", "2026", "2027", "2028"];
+  const months = [
+    { value: "all", label: "All Months" },
+    { value: "01", label: "January" },
+    { value: "02", label: "February" },
+    { value: "03", label: "March" },
+    { value: "04", label: "April" },
+    { value: "05", label: "May" },
+    { value: "06", label: "June" },
+    { value: "07", label: "July" },
+    { value: "08", label: "August" },
+    { value: "09", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" }
+  ];
 
   useEffect((): void => {
     if (data?.data) {
@@ -31,8 +48,37 @@ export default function SalesTable() {
     }
   }, [data]);
 
+  // Filter orders based on selected year and month
+  useEffect(() => {
+    if (orders.length > 0) {
+      let filtered = orders;
 
-    const [toggle, setToggle] = useState(true)
+      // Filter by year
+      filtered = filtered.filter(order => {
+        const orderYear = order.date.split('-')[0];
+        return orderYear === selectedYear;
+      });
+
+      // Filter by month if not "all"
+      if (selectedMonth !== "all") {
+        filtered = filtered.filter(order => {
+          const orderMonth = order.date.split('-')[1];
+          return orderMonth === selectedMonth;
+        });
+      }
+
+      setFilteredOrders(filtered);
+    }
+  }, [orders, selectedYear, selectedMonth]);
+
+  const handleYearChange = (year: string) => {
+    setSelectedYear(year);
+    setSelectedMonth("all"); // Reset month to "all" when year changes
+  };
+
+  const handleMonthChange = (month: string) => {
+    setSelectedMonth(month);
+  };
 
   return (
     <div className="min-h-screen ">
@@ -40,7 +86,9 @@ export default function SalesTable() {
       <br />
 
       <div className="w-[900px] flex gap-10 m-auto ">
-          <Button onClick={() =>setToggle(!toggle)}>   {(!toggle) ? "Monthly sales"  : "Product Sales"} </Button>
+        <Button onClick={() => setToggle(!toggle)}>
+          {(!toggle) ? "Monthly sales" : "Product Sales"}
+        </Button>
       </div>
 
       <br />
@@ -50,6 +98,47 @@ export default function SalesTable() {
       </div>
 
       <br /><br /><br /> <br /><br /> <br /><br />
+
+      {/* Filter Section */}
+      <div className="w-[900px] m-auto mb-6">
+        <div className="flex gap-4 items-center  p-4 rounded-lg shadow-lg bg-stone-50">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">Year:</label>
+            <Select value={selectedYear} onValueChange={handleYearChange}>
+              <SelectTrigger className="w-[120px] bg-white">
+                <SelectValue placeholder="Select year" />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">Month:</label>
+            <Select value={selectedMonth} onValueChange={handleMonthChange}>
+              <SelectTrigger className="w-[140px] bg-white">
+                <SelectValue placeholder="Select month" />
+              </SelectTrigger>
+              <SelectContent>
+                {months.map((month) => (
+                  <SelectItem key={month.value} value={month.value}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="text-sm text-gray-600 ml-auto">
+            Showing {filteredOrders.length} orders
+          </div>
+        </div>
+      </div>
 
       <div className="m-auto w-[900px] shadow-lg">
         <Table className="bg-white shadow-lg rounded-lg">
@@ -66,7 +155,7 @@ export default function SalesTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders.map((item, index) => (
+            {filteredOrders.map((item, index) => (
               <TableRow key={index}>
                 <TableCell>{item.customer_name}</TableCell>
                 <TableCell>{item.product_name}</TableCell>
@@ -76,9 +165,6 @@ export default function SalesTable() {
                 <TableCell>₱{item.total_price.toLocaleString()}</TableCell>
                 <TableCell>{item.date}</TableCell>
                 <TableCell>
-                  {item.status === "pending" && <Badge className="bg-yellow-400 text-white">Pending</Badge>}
-                  {item.status === "processing" && <Badge className="bg-blue-400 text-white">Processing</Badge>}
-                  {item.status === "to ship" && <Badge className="bg-orange-400 text-white">To Ship</Badge>}
                   {item.status === "completed" && <Badge className="bg-green-400 text-white">Completed</Badge>}
                 </TableCell>
               </TableRow>

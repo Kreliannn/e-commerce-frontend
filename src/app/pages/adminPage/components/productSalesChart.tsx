@@ -100,7 +100,8 @@ const rawData = [
         "total_quantity": 25,
         "img": "https://res.cloudinary.com/dljxtf9dg/image/upload/v1749131681/vza9hvg8n17tbbtmefrm.jpg",
         "product_name": "set"
-      }
+      },
+      
 ]
   // Sort products from lowest to highest sales
   const sortedData = [...rawData].sort((a, b) => a.total_sales - b.total_sales)
