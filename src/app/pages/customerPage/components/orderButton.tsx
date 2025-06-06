@@ -118,7 +118,8 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
         product_id : product_id,   
         color : product[index].color ,
         grouped_id : product[index].product_id,
-        shippingFee : getShippingFee(quantity)   
+        shippingFee : getShippingFee(quantity),
+        img : product[0].image   
       };
     
       mutation.mutate(orderObj)
