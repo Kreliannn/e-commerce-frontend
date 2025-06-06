@@ -19,11 +19,9 @@ export default function Home() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-
-
   const locations = quezonLocations
 
-  //const [municipality, setMunicipality] = useState([])
+
   const [barangay, setBarangay] = useState<string[]>([])
 
 

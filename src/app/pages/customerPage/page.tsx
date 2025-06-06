@@ -38,16 +38,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-100 overflow-auto">
       <CustomerNavbar />
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5 p-2">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5 p-5 md:p-3">
         {products.map((product) => (
           <div
             key={product[0]?._id}
-            className="bg-white rounded-xl shadow p-3 text-sm"
+            className="bg-white rounded-xl shadow-lg p-3 text-sm " 
           >
             <img
               src={product[0]?.image}
               alt={product[0]?.name}
-              className="w-full h-64 object-cover rounded-md mb-3" // taller image
+              className="w-full  h-[350px] md:h-64 object-cover rounded-md mb-3" // taller image
             />
             <h2 className="text-base font-semibold mb-1">{product[0]?.name}</h2>
             <p className="text-gray-600 mb-1">Price: ₱{product[0]?.price}</p>
