@@ -50,9 +50,11 @@ export default function SalesTable() {
             <TableHead>Customer</TableHead>
         
             <TableHead>Product</TableHead>
+            <TableHead>Color</TableHead>
             <TableHead>Size</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Quantity</TableHead>
+            <TableHead>Shiping</TableHead>
             <TableHead>Total</TableHead>
             <TableHead>Date</TableHead>
       
@@ -64,12 +66,14 @@ export default function SalesTable() {
           {orders.map((item, index) => (
             <TableRow key={index}>
               <TableCell>{item.customer_name}</TableCell>
-            
+          
               <TableCell>{item.product_name}</TableCell>
+              <TableCell>{item.color}</TableCell>
               <TableCell>{item.size}</TableCell>
-              <TableCell>{item.product_price}</TableCell>
+              <TableCell>₱{item.product_price}</TableCell>
               <TableCell>{item.quantity}</TableCell>
-              <TableCell>{item.total_price}</TableCell>
+              <TableCell>₱{item.shippingFee}</TableCell>
+              <TableCell>₱{item.total_price}</TableCell>
               <TableCell>{item.date}</TableCell>
   
               <TableCell>{item.status}</TableCell>

@@ -13,6 +13,7 @@ export interface orderInterface {
     product_id : string,
     color : string,
     grouped_id : string,
+    shippingFee : number
 }
 
 export interface getOrderInterface {
@@ -31,4 +32,5 @@ export interface getOrderInterface {
     product_id : string,
     color : string,
     grouped_id : string,
+    shippingFee : number
 }

@@ -22,7 +22,9 @@ import { successAlert, errorAlert } from '@/app/utils/alert';
 import Image from "next/image"
 import { CarouselImage } from "./carousel"
 import { confirmAlert } from "@/app/utils/alert"
-
+import { addFeeBasedOnSize } from "@/app/utils/customFunction"
+import { getShippingFee } from "@/app/utils/customFunction"
+import { checkIFOutOFStock } from "@/app/utils/customFunction"
 
 
 export function OrderButton({ product, setProduct }: { product: getProductInterrface[], setProduct: React.Dispatch<React.SetStateAction<getProductInterrface[][]>> }) {
@@ -93,8 +95,9 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
       return
     }
 
-    const productPrice = product[index].price; // number
-    const totalPrice = productPrice * quantity;
+    let productPrice = addFeeBasedOnSize(product[index].price, selectedSize); 
+      
+    const totalPrice = (productPrice * quantity) + getShippingFee(quantity);
     setOpen(false)
 
     confirmAlert(` check out ${quantity} ${ product[index].name} color ${ product[index].color} for ₱${totalPrice}?`, "Check Out", () => {
@@ -114,7 +117,8 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
         modeOfPayment: paymentMode, 
         product_id : product_id,   
         color : product[index].color ,
-        grouped_id : product[index].product_id   
+        grouped_id : product[index].product_id,
+        shippingFee : getShippingFee(quantity)   
       };
     
       mutation.mutate(orderObj)
@@ -162,7 +166,9 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
                     <SelectValue placeholder="Select size" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all"> select size </SelectItem>
+
+                    <SelectItem value="all"> { checkIFOutOFStock([getStockForSize("xs"), getStockForSize("s"), getStockForSize("m"), getStockForSize("l"), getStockForSize("xl"), getStockForSize("xxl"), getStockForSize("xxxl")]) } </SelectItem>
+
                     {product[index].xs > 0 && (
                       <SelectItem value="xs">XS - {product[index].xs} - <span className="text-green-500"> ₱{product[index].price} </span></SelectItem>
                     )}
@@ -228,8 +234,10 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
 
           </div>
           
-          <div className="w-full h-10 flex gap-5">
-                <p> price : {price * quantity} </p>
+          <div className="w-full h-10 flex gap-5 justify-center items-center">
+                <p className="font-bold text-stone-500"> price : <span className="text-green-500">  ₱{ addFeeBasedOnSize(product[index].price, selectedSize) * quantity} </span> </p>
+                <p className="font-bold text-stone-500"> shipping : <span className="text-green-500">  ₱{ getShippingFee(quantity) } </span>  </p>
+                <p className="font-bold text-stone-500"> total : <span className="text-green-500">  ₱{(addFeeBasedOnSize(product[index].price, selectedSize) * quantity) + getShippingFee(quantity)} </span>   </p>
           </div>
          
          

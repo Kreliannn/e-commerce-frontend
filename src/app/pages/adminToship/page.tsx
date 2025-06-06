@@ -51,12 +51,14 @@ export default function SalesTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Customer</TableHead>
-            <TableHead>Address</TableHead>
+            <TableHead className="w-[500px]">Address</TableHead>
             <TableHead>Product</TableHead>
+            <TableHead>Color</TableHead>
             <TableHead>Size</TableHead>
             <TableHead>Quantity</TableHead>
+            <TableHead>Shipping</TableHead>
             <TableHead>Total</TableHead>
-            <TableHead>Mode of Payment</TableHead>
+            <TableHead> Payment</TableHead>
             <TableHead>Status</TableHead>
             <TableHead> To Ship </TableHead>
           </TableRow>
@@ -65,11 +67,13 @@ export default function SalesTable() {
           {orders.map((item, index) => (
             <TableRow key={index}>
               <TableCell>{item.customer_name}</TableCell>
-              <TableCell>{item.customer_address}</TableCell>
+              <TableCell className="text-xs font-bold">{item.customer_address}</TableCell>
               <TableCell>{item.product_name}</TableCell>
+              <TableCell>{item.color}</TableCell>
               <TableCell>{item.size}</TableCell>
               <TableCell>{item.quantity}</TableCell>
-              <TableCell>{item.total_price}</TableCell>
+              <TableCell>₱{item.shippingFee}</TableCell>
+              <TableCell>₱{item.total_price}</TableCell>
               <TableCell>{item.modeOfPayment}</TableCell>
               <TableCell>{item.status}</TableCell>
               <TableCell>

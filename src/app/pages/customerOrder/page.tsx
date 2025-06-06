@@ -57,6 +57,7 @@ export default function SalesTable() {
             <TableHead>Size</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Quantity</TableHead>
+            <TableHead>Shipping Fee</TableHead>
             <TableHead>Total</TableHead>
             <TableHead>Date</TableHead>
       
@@ -74,6 +75,7 @@ export default function SalesTable() {
               <TableCell>{item.size}</TableCell>
               <TableCell>{item.product_price}</TableCell>
               <TableCell>{item.quantity}</TableCell>
+              <TableCell>{item.shippingFee}</TableCell>
               <TableCell>{item.total_price}</TableCell>
               <TableCell>{item.date}</TableCell>
   
