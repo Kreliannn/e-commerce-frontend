@@ -11,6 +11,8 @@ export interface orderInterface {
     date : string,
     modeOfPayment : string,
     product_id : string,
+    color : string,
+    grouped_id : string,
 }
 
 export interface getOrderInterface {
@@ -27,4 +29,6 @@ export interface getOrderInterface {
     date : string,
     modeOfPayment : string,
     product_id : string,
+    color : string,
+    grouped_id : string,
 }

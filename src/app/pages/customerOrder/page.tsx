@@ -53,6 +53,7 @@ export default function SalesTable() {
           <TableRow>
             <TableHead>Customer</TableHead>
             <TableHead>Product</TableHead>
+            <TableHead>color</TableHead>
             <TableHead>Size</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Quantity</TableHead>
@@ -69,6 +70,7 @@ export default function SalesTable() {
               <TableCell>{item.customer_name}</TableCell>
             
               <TableCell>{item.product_name}</TableCell>
+              <TableCell>{item.color}</TableCell>
               <TableCell>{item.size}</TableCell>
               <TableCell>{item.product_price}</TableCell>
               <TableCell>{item.quantity}</TableCell>

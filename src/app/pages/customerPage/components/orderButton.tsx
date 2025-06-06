@@ -21,7 +21,7 @@ import { orderInterface } from "@/app/types/order.types"
 import { successAlert, errorAlert } from '@/app/utils/alert';
 import Image from "next/image"
 import { CarouselImage } from "./carousel"
-
+import { confirmAlert } from "@/app/utils/alert"
 
 
 
@@ -95,29 +95,43 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
 
     const productPrice = product[index].price; // number
     const totalPrice = productPrice * quantity;
-  
-    const orderObj = {
-      customer_id: _id || "",              // from userStore
-      customer_name: fullname || "",       // from userStore
-      customer_address: address || "",     // from userStore
-      product_name: product[index].name || "",
-      size: selectedSize || "",
-      product_price: productPrice.toString(),  // schema expects String
-      total_price: totalPrice,              // Number
-      quantity: quantity,                   // Number
-      status: status,                      // 'pending'
-      date: date,                         // YYYY-MM-DD string
-      modeOfPayment: paymentMode, 
-      product_id : product_id,        // 'COD' or 'GCASH'
-    };
-  
-    mutation.mutate(orderObj)
+    setOpen(false)
+
+    confirmAlert(` check out ${quantity} ${ product[index].name} color ${ product[index].color} for ₱${totalPrice}?`, "Check Out", () => {
+      
+    
+      const orderObj = {
+        customer_id: _id || "",              
+        customer_name: fullname || "",       
+        customer_address: address || "",     
+        product_name: product[index].name || "",
+        size: selectedSize || "",
+        product_price: productPrice.toString(),  
+        total_price: totalPrice,            
+        quantity: quantity,                 
+        status: status,                    
+        date: date,                        
+        modeOfPayment: paymentMode, 
+        product_id : product_id,   
+        color : product[index].color ,
+        grouped_id : product[index].product_id   
+      };
+    
+      mutation.mutate(orderObj)
+    })
+
+    
   };
 
   useEffect(() => {
     setSelectedSize("all")
-    setQuantity(0)
+    setQuantity(1)
   }, [index])
+
+
+  useEffect(() => {
+    if(selectedSize == "all") setQuantity(1)
+  }, [selectedSize])
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -132,7 +146,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
           <DialogTitle className="text-center">{product[index].name} ( <span className="text-stone-600">{product[index].color}</span> ) <span className="text-green-500"> ₱{product[index].price} - {product[index].price + 50}  </span> </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 mb-6">
+        <div className="space-y-4 ">
 
           <div className="w-full h-96 ">
             <CarouselImage images={images} setIndex={setIndex}/>
@@ -141,7 +155,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
           <div className="flex w-full gap-5 mt-5 justify-center items-center">
               <div>
                 <Label htmlFor="size-select" className="mb-1">
-                  Size & Stocks
+                  Size - Stocks - price
                 </Label>
                 <Select value={selectedSize} onValueChange={setSelectedSize}>
                   <SelectTrigger>
@@ -150,25 +164,25 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
                   <SelectContent>
                     <SelectItem value="all"> select size </SelectItem>
                     {product[index].xs > 0 && (
-                      <SelectItem value="xs">XS -- ({product[index].xs})</SelectItem>
+                      <SelectItem value="xs">XS - {product[index].xs} - <span className="text-green-500"> ₱{product[index].price} </span></SelectItem>
                     )}
                     {product[index].s > 0 && (
-                      <SelectItem value="s">S -- ({product[index].s})</SelectItem>
+                      <SelectItem value="s">S - {product[index].s} - <span className="text-green-500"> ₱{product[index].price} </span></SelectItem>
                     )}
                     {product[index].m > 0 && (
-                      <SelectItem value="m">M -- ({product[index].m})</SelectItem>
+                      <SelectItem value="m">M - {product[index].m} - <span className="text-green-500"> ₱{product[index].price} </span></SelectItem>
                     )}
                     {product[index].l > 0 && (
-                      <SelectItem value="l">L -- ({product[index].l})</SelectItem>
+                      <SelectItem value="l">L - {product[index].l} - <span className="text-green-500"> ₱{product[index].price + 10 } </span></SelectItem>
                     )}
                     {product[index].xl > 0 && (
-                      <SelectItem value="xl">XL -- ({product[index].xl})</SelectItem>
+                      <SelectItem value="xl">XL - {product[index].xl} - <span className="text-green-500"> ₱{product[index].price + 20} </span></SelectItem>
                     )}
                     {product[index].xxl > 0 && (
-                      <SelectItem value="xxl">XXL -- ({product[index].xxl})</SelectItem>
+                      <SelectItem value="xxl">XXL - {product[index].xxl} - <span className="text-green-500"> ₱{product[index].price + 30 } </span></SelectItem>
                     )}
                     {product[index].xxxl > 0 && (
-                      <SelectItem value="xxxl">XXXL -- ({product[index].xxxl})</SelectItem>
+                      <SelectItem value="xxxl">XXXL - {product[index].xxxl} - <span className="text-green-500"> ₱{product[index].price + 50} </span></SelectItem>
                     )}
                   </SelectContent>
                 </Select>
@@ -189,7 +203,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
                   value={quantity}
                   onChange={e => setQuantity(Number(e.target.value))}
                 />
-                {selectedSize && quantity > getStockForSize(selectedSize) && (
+                {(selectedSize != "all" && quantity > getStockForSize(selectedSize)) && (
                   <p className="text-sm text-red-600 mt-1">
                     Quantity exceeds available stock ({getStockForSize(selectedSize)})
                   </p>
@@ -199,7 +213,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
 
           <div>
             <Label htmlFor="payment-mode-select" className="mb-1">
-              Mode of Payment
+              Payment
             </Label>
             <Select value={paymentMode} onValueChange={setPaymentMode}>
               <SelectTrigger>
@@ -213,7 +227,10 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
           </div>
 
           </div>
-
+          
+          <div className="w-full h-10 flex gap-5">
+                <p> price : {price * quantity} </p>
+          </div>
          
          
         </div>
