@@ -1,4 +1,4 @@
-
+import { getOrderInterface } from "../types/order.types";
 
 
 export const addFeeBasedOnSize = ( price : number, size : string ) => {
@@ -44,3 +44,38 @@ export const checkIFOutOFStock = ( stocks : number[] ) => {
     if(stockNum == 7) return "Out Of Stock"
     else return "Available Size"
 }
+
+
+
+
+
+
+
+export function getMonthName(monthNumber: string): string | undefined {
+    const months: { [key: string]: string } = {
+      "01": "January",
+      "02": "February",
+      "03": "March",
+      "04": "April",
+      "05": "May",
+      "06": "June",
+      "07": "July",
+      "08": "August",
+      "09": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December",
+      "all": "January - December",
+    };
+  
+    return months[monthNumber];
+  }
+  
+  export const getTotalSales = (orders : getOrderInterface[]) => {
+    let totalSales = 0
+    orders.forEach((item) => {
+      totalSales += item.total_price
+    })
+    return totalSales
+  }
+  
