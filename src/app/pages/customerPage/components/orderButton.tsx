@@ -119,7 +119,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
         color : product[index].color ,
         grouped_id : product[index].product_id,
         shippingFee : getShippingFee(quantity),
-        img : product[0].image   
+        img : product[index].image   
       };
     
       mutation.mutate(orderObj)

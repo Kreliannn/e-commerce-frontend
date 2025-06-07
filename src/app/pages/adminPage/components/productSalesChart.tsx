@@ -16,18 +16,51 @@ import {
 } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { TrendingUp } from "lucide-react"
+import { getOrderInterface } from "@/app/types/order.types"
 
 interface ProductData {
   product_id: string
   total_sales: number
   total_quantity: number
   img: string
-  product_name: string
+  product_name: string,
+  color : string
 }
 
 interface Props {
   chartData: ProductData[]
 }
+
+
+
+const formatData =  ( data : getOrderInterface[]) => {
+  const orders = data;
+  const completedOrders = orders.filter(order => order.status === "completed");
+
+  const productSales = completedOrders.reduce((acc, order) => {
+    const productId = order.product_id ;
+
+    if (typeof productId === "string" && order.product_name && order.img) {
+      if (!acc[productId]) {
+        acc[productId] = {
+          product_id: productId,
+          total_sales: 0,
+          total_quantity: 0,
+          img : order.img ,
+          product_name : order.product_name,
+          color : order.color
+        };
+      }
+
+      acc[productId].total_sales += ( order.total_price || 0);
+      acc[productId].total_quantity += ( order.quantity || 0);
+    }
+
+    return acc;
+  }, {} as Record<string, { product_id: string; total_sales: number; total_quantity: number, img : string, product_name : string, color : string }>);
+
+  return Object.values(productSales);
+};
 
 const chartConfig: ChartConfig = {
   total_sales: {
@@ -41,26 +74,31 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload as ProductData
     return (
-      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 min-w-[250px]">
+      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 min-w-[120px] top-40">
         <div className="flex items-center gap-3 mb-3">
           <img 
             src={data.img} 
             alt={data.product_name}
-            className="w-12 h-12 object-cover rounded-md"
+            className="w-24 h-24 object-cover rounded-md"
             onError={(e) => {
               const target = e.target as HTMLImageElement
               target.style.display = 'none'
             }}
           />
-          <div>
-            <p className="font-semibold text-gray-900">{data.product_name}</p>
-          </div>
+        
         </div>
         <div className="space-y-1">
-          <p className="text-sm text-gray-600">
+          <div>
+            <p className="font-bold text-sm text-gray-900">{data.product_name}</p>
+          </div>
+
+          <p className="text-xs text-gray-600">
+            <span className="font-medium">Color:</span> {data.color}
+          </p>
+          <p className="text-xs text-gray-600">
             <span className="font-medium">Total Sales:</span> ₱{data.total_sales.toLocaleString()}
           </p>
-          <p className="text-sm text-gray-600">
+          <p className="text-xs text-gray-600">
             <span className="font-medium">Quantity Sold:</span> {data.total_quantity}
           </p>
         </div>
@@ -70,39 +108,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null
 }
 
-export default function ProductSalesChart() {
+export default function ProductSalesChart( { productChartData } : { productChartData : getOrderInterface[]}) {
 
-const rawData = [
-    {
-        "product_id": "no0wp0rb",
-        "total_sales": 5860,
-        "total_quantity": 6,
-        "img": "https://res.cloudinary.com/dljxtf9dg/image/upload/v1749125708/oilhgasuvrr6o1jvqgpc.jpg",
-        "product_name": "thsirt version 1"
-      },
-      {
-        "product_id": "azn8twp8",
-        "total_sales": 4870,
-        "total_quantity": 4,
-        "img": "https://res.cloudinary.com/dljxtf9dg/image/upload/v1749125811/d9qn5jsvsncpp2fesxik.jpg",
-        "product_name": "tshirt special edition"
-      },
-      {
-        "product_id": "3jzot9ag",
-        "total_sales": 21450,
-        "total_quantity": 2,
-        "img": "https://res.cloudinary.com/dljxtf9dg/image/upload/v1749125747/j2pd1oa0dwjcqo4xdr91.jpg",
-        "product_name": "tshirt version 2"
-      },
-      {
-        "product_id": "hoac5py3",
-        "total_sales": 12690,
-        "total_quantity": 25,
-        "img": "https://res.cloudinary.com/dljxtf9dg/image/upload/v1749131681/vza9hvg8n17tbbtmefrm.jpg",
-        "product_name": "set"
-      },
-      
-]
+  const rawData = formatData(productChartData)
   // Sort products from lowest to highest sales
   const sortedData = [...rawData].sort((a, b) => a.total_sales - b.total_sales)
   

@@ -13,6 +13,7 @@ import MonthlySalesChart from "./components/monthlySalesChart";
 
 export default function SalesTable() {
   const [orders, setOrders] = useState<getOrderInterface[]>([]);
+  const [productChartData, setProductChartData] = useState<getOrderInterface[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<getOrderInterface[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>("2025");
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
@@ -82,7 +83,13 @@ export default function SalesTable() {
 
   const handleSelectBarMonth = ( month : string) => {
     const monthValue = months.filter((item) => item.label == month)
-    //alert(monthValue[0].value)
+
+    const filteredData = orders.filter(order => {
+      const orderMonth = order.date.split('-')[1];
+      return orderMonth === monthValue[0].value;
+    });
+    
+    setProductChartData(filteredData)
     setToggle(false)
   }
 
@@ -98,7 +105,7 @@ export default function SalesTable() {
       <br />
 
       <div className="w-[900px] h-[500px] m-auto ">
-        {(toggle) ? <MonthlySalesChart data={orders} handleSelectBarMonth={handleSelectBarMonth}/> : <ProductSalesChart />}
+        {(toggle) ? <MonthlySalesChart data={orders} handleSelectBarMonth={handleSelectBarMonth}/> : <ProductSalesChart productChartData={productChartData} />}
       </div>
 
       <br /><br /><br /> <br /><br /> <br /><br />
