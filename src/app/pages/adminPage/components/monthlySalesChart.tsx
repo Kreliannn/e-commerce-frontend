@@ -25,7 +25,8 @@ interface ChartDataItem {
 }
 
 interface Props {
-    data: getOrderInterface[]
+    data: getOrderInterface[],
+    handleSelectBarMonth : ( month  : string) => void
 }
 
 
@@ -78,7 +79,7 @@ const processSalesData = (ordersData: getOrderInterface[]): ChartDataItem[] => {
     }));
   };
 
-export default function MonthlySalesChart({ data }: Props) {
+export default function MonthlySalesChart({ data, handleSelectBarMonth }: Props) {
   const  chartData = processSalesData(data)
   const totalSales = chartData.reduce((sum, month) => sum + month.sales, 0)
   const currentMonth = new Date().getMonth()
@@ -107,7 +108,7 @@ export default function MonthlySalesChart({ data }: Props) {
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey="sales" fill="var(--color-sales)" radius={8} onClick={(data) => alert(data.month)}/>
+            <Bar dataKey="sales" fill="var(--color-sales)" radius={8} onClick={(data) => handleSelectBarMonth(data.month) }/>
           </BarChart>
         </ChartContainer>
       </CardContent>

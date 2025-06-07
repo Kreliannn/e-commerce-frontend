@@ -80,21 +80,25 @@ export default function SalesTable() {
     setSelectedMonth(month);
   };
 
+  const handleSelectBarMonth = ( month : string) => {
+    const monthValue = months.filter((item) => item.label == month)
+    //alert(monthValue[0].value)
+    setToggle(false)
+  }
+
   return (
     <div className="min-h-screen ">
       <Navbar />
       <br />
 
       <div className="w-[900px] flex gap-10 m-auto ">
-        <Button onClick={() => setToggle(!toggle)}>
-          {(!toggle) ? "Monthly sales" : "Product Sales"}
-        </Button>
+        {(!toggle) ? <Button onClick={() => setToggle(true)}> Back to Chart </Button> : null}
       </div>
 
       <br />
 
       <div className="w-[900px] h-[500px] m-auto ">
-        {(toggle) ? <MonthlySalesChart data={orders} /> : <ProductSalesChart />}
+        {(toggle) ? <MonthlySalesChart data={orders} handleSelectBarMonth={handleSelectBarMonth}/> : <ProductSalesChart />}
       </div>
 
       <br /><br /><br /> <br /><br /> <br /><br />
@@ -146,6 +150,7 @@ export default function SalesTable() {
             <TableRow>
               <TableHead>Customer</TableHead>
               <TableHead>Product</TableHead>
+               <TableHead>Color</TableHead>
               <TableHead>Size</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Quantity</TableHead>
@@ -159,6 +164,7 @@ export default function SalesTable() {
               <TableRow key={index}>
                 <TableCell>{item.customer_name}</TableCell>
                 <TableCell>{item.product_name}</TableCell>
+                <TableCell>{item.color}</TableCell>
                 <TableCell>{item.size}</TableCell>
                 <TableCell>₱{item.product_price}</TableCell>
                 <TableCell>{item.quantity}</TableCell>

@@ -39,7 +39,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-100 overflow-auto">
       <CustomerNavbar />
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-5 p-5 md:p-3">
-        {products.map((product) => (
+        {products?.map((product) => (
           <div
             key={product[0]?._id}
             className="bg-white rounded-xl shadow-lg p-3 text-sm " 
@@ -50,9 +50,9 @@ export default function Home() {
               className="w-full  h-[350px] md:h-64 object-cover rounded-md mb-3" // taller image
             />
             <h2 className="text-base font-semibold mb-1">{product[0]?.name}</h2>
-            <p className="text-gray-600 mb-1">Price: ₱{product[0]?.price}</p>
+            <p className="text-gray-600 mb-1">Price: ₱{product[0]?.price} - {product[0]?.price + 50 } </p>
             <div className="flex w-full gap-2 mb-2 ">
-              {product.map((item, index) => (  <Badge key={index} variant={"outline"} className="shadow"> {item.color} </Badge>))}
+              {product?.map((item, index) => (  <Badge key={index} variant={"outline"} className="shadow"> {item.color} </Badge>))}
             </div>
             
             <OrderButton product={product} setProduct={setProducts}/>
