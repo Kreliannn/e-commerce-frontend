@@ -108,7 +108,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null
 }
 
-export default function ProductSalesChart( { productChartData } : { productChartData : getOrderInterface[]}) {
+export default function ProductSalesChart( { productChartData , selectedMonth } : { productChartData : getOrderInterface[], selectedMonth : string}) {
+
 
   const rawData = formatData(productChartData)
   // Sort products from lowest to highest sales
@@ -127,8 +128,8 @@ export default function ProductSalesChart( { productChartData } : { productChart
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Product Sales Performance</CardTitle>
-        <CardDescription>Products sorted by sales performance (lowest to highest)</CardDescription>
+        <CardTitle > Month of {selectedMonth} Product Sales Performance</CardTitle>
+        <CardDescription >Products sorted by sales performance (lowest to highest)</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>

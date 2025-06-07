@@ -14,6 +14,7 @@ import MonthlySalesChart from "./components/monthlySalesChart";
 export default function SalesTable() {
   const [orders, setOrders] = useState<getOrderInterface[]>([]);
   const [productChartData, setProductChartData] = useState<getOrderInterface[]>([]);
+  const [selectedMonthChart, setSelectedMonthChart] = useState("");
   const [filteredOrders, setFilteredOrders] = useState<getOrderInterface[]>([]);
   const [selectedYear, setSelectedYear] = useState<string>("2025");
   const [selectedMonth, setSelectedMonth] = useState<string>("all");
@@ -88,9 +89,21 @@ export default function SalesTable() {
       const orderMonth = order.date.split('-')[1];
       return orderMonth === monthValue[0].value;
     });
+
+    setSelectedYear("2025")
+    setSelectedMonth(monthValue[0].value)
+    setSelectedMonthChart(month)
     
     setProductChartData(filteredData)
     setToggle(false)
+  }
+
+
+  const handleCloseChart = () => {
+    setToggle(true)
+    setProductChartData([])
+    setSelectedYear("2025")
+    setSelectedMonth("all")
   }
 
   return (
@@ -99,13 +112,13 @@ export default function SalesTable() {
       <br />
 
       <div className="w-[900px] flex gap-10 m-auto ">
-        {(!toggle) ? <Button onClick={() => setToggle(true)}> Back to Chart </Button> : null}
+        {(!toggle) ? <Button onClick={handleCloseChart}> Back to monthly Sales Chart </Button> : null}
       </div>
 
       <br />
 
       <div className="w-[900px] h-[500px] m-auto ">
-        {(toggle) ? <MonthlySalesChart data={orders} handleSelectBarMonth={handleSelectBarMonth}/> : <ProductSalesChart productChartData={productChartData} />}
+        {(toggle) ? <MonthlySalesChart data={orders} handleSelectBarMonth={handleSelectBarMonth}/> : <ProductSalesChart productChartData={productChartData} selectedMonth={selectedMonthChart} />}
       </div>
 
       <br /><br /><br /> <br /><br /> <br /><br />
