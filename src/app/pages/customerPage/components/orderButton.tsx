@@ -25,7 +25,7 @@ import { confirmAlert } from "@/app/utils/alert"
 import { addFeeBasedOnSize } from "@/app/utils/customFunction"
 import { getShippingFee } from "@/app/utils/customFunction"
 import { checkIFOutOFStock } from "@/app/utils/customFunction"
-
+import { cartInterface } from "@/app/types/cart.types"
 
 export function OrderButton({ product, setProduct }: { product: getProductInterrface[], setProduct: React.Dispatch<React.SetStateAction<getProductInterrface[][]>> }) {
   const [open, setOpen] = useState(false)
@@ -71,7 +71,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
     }
   }
 
-  const mutation = useMutation({
+  const orderMutation = useMutation({
     mutationFn : (data : orderInterface) => axios.post("http://localhost:5000/order/create", { order :  data}),
     onSuccess : (response : { data : getProductInterrface[][]} ) => {
       setProduct(response.data)
@@ -81,7 +81,17 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
     onError : (err : { request : { response : string}}) => errorAlert(err.request.response)
   })
 
-  const handleOrder = () => {
+
+  const cartMutation = useMutation({
+    mutationFn : (data : cartInterface) => axios.post("http://localhost:5000/cart/create", { cart :  data}),
+    onSuccess : () => {
+      successAlert("Order Added to Cart")
+      setOpen(false)
+    },
+    onError : (err : { request : { response : string}}) => errorAlert(err.request.response)
+  })
+
+  const handleOrder = (type : "order" | "cart") => {
     // Validate quantity against selected size stock
     const currentStock = getStockForSize(selectedSize)
     
@@ -97,11 +107,14 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
 
     let productPrice = addFeeBasedOnSize(product[index].price, selectedSize); 
       
-    const totalPrice = (productPrice * quantity) + getShippingFee(quantity);
+    const totalPrice = (type == "order") ? (productPrice * quantity) + getShippingFee(quantity) : productPrice * quantity;
+
     setOpen(false)
 
-    confirmAlert(` check out ${quantity} ${ product[index].name} color ${ product[index].color} for ₱${totalPrice}?`, "Check Out", () => {
-      
+    const text = (type == "order") ? `check out ${quantity} ${ product[index].name} color ${ product[index].color} for ₱${totalPrice}?` : `add to cart ${quantity} ${product[index].name}`
+    const textButton = (type == "order") ? "Check Out" : "add to cart"
+
+    confirmAlert(text, textButton, () => {
     
       const orderObj = {
         customer_id: _id || "",              
@@ -109,7 +122,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
         customer_address: address || "",     
         product_name: product[index].name || "",
         size: selectedSize || "",
-        product_price: productPrice.toString(),  
+        product_price: productPrice,  
         total_price: totalPrice,            
         quantity: quantity,                 
         status: status,                    
@@ -118,11 +131,11 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
         product_id : product_id,   
         color : product[index].color ,
         grouped_id : product[index].product_id,
-        shippingFee : getShippingFee(quantity),
+        shippingFee : (type == "order") ? getShippingFee(quantity) : 0,
         img : product[index].image   
       };
-    
-      mutation.mutate(orderObj)
+
+      (type == "cart") ? cartMutation.mutate(orderObj) :  orderMutation.mutate(orderObj)
     })
 
     
@@ -244,14 +257,21 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
          
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex">
+          <Button 
+            onClick={() => handleOrder("cart")}
+            disabled={!selectedSize || quantity > getStockForSize(selectedSize) || quantity < 1}
+            className="w-2/6"
+          >
+            Add To Cart
+          </Button>
           <Button 
             type="submit" 
-            onClick={handleOrder}
+            onClick={() => handleOrder("order")}
             disabled={!selectedSize || quantity > getStockForSize(selectedSize) || quantity < 1}
-            className="w-full"
+            className="w-4/6 "
           >
-            Order Product
+            Order Now
           </Button>
         </DialogFooter>
       </DialogContent>

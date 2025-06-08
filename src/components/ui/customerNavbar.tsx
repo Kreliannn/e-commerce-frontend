@@ -27,6 +27,9 @@ export default function CustomerNavbar() {
         <Button variant="ghost" onClick={() => router.push("/pages/customerOrder")}>
           Orders
         </Button>
+        <Button variant="ghost" onClick={() => { setMenuOpen(false); router.push("/pages/customerCart") }}>
+            Cart
+          </Button>
         <Button variant="ghost" onClick={() => router.push("/pages/customerPage")}>
           Products
         </Button>
@@ -47,6 +50,9 @@ export default function CustomerNavbar() {
         <div className="absolute top-16 right-4 bg-white shadow-md rounded-md p-4 flex flex-col space-y-2 md:hidden z-50">
           <Button variant="ghost" onClick={() => { setMenuOpen(false); router.push("/pages/customerOrder") }}>
             Orders
+          </Button>
+          <Button variant="ghost" onClick={() => { setMenuOpen(false); router.push("/pages/customerCart") }}>
+            Cart
           </Button>
           <Button variant="ghost" onClick={() => { setMenuOpen(false); router.push("/pages/customerPage") }}>
             Products
