@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { Mutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import CustomerNavbar from "@/components/ui/customerNavbar";
@@ -14,6 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { getShippingFee } from "@/app/utils/customFunction";
+import { useMutation } from "@tanstack/react-query";
+import { confirmAlert } from "@/app/utils/alert";
 
 export default function Home() {
   const router = useRouter();
@@ -37,6 +39,17 @@ export default function Home() {
       }
     }
   }, [data]);
+
+
+  const orderMutation = useMutation({
+    mutationFn : (data : getCartInterface[]) => axios.post("http://localhost:5000/cart/createOrders", { orders :  data}),
+    onSuccess : (response : { data : getCartInterface[]} ) => {
+      setProducts(response.data.filter((item) => item.customer_id == _id))
+      successAlert("Order Placed")
+    },
+    onError : (err : { request : { response : string}}) => errorAlert(err.request.response)
+  })
+
 
   const handleSelectItem = (product: getCartInterface, checked: boolean) => {
     if (checked) {
@@ -80,25 +93,27 @@ export default function Home() {
   const handleCheckout = async () => {
 
     if(selectedItems.length == 0) return errorAlert("select item first")
-        
-    const checkedItems = selectedItems;
-    
-    // Calculate shipping fee per item (total shipping fee divided by number of selected items)
-    const shippingFeePerItem =  totalShippingFee / selectedItems.length ;
-    
-    // Update each selected item's shipping fee and total price
-    const updatedItems = checkedItems.map(item => ({
-      ...item,
-      shippingFee: shippingFeePerItem,
-      total_price: item.total_price + shippingFeePerItem
-    }));
-    
 
-    console.log(updatedItems)
+    confirmAlert(`check out ${totalSelectedQuantity()} items for ₱${totalSelectedPrice}`, "Check Out", () => {
+        const checkedItems = selectedItems;
+    
+        // Calculate shipping fee per item (total shipping fee divided by number of selected items)
+        const shippingFeePerItem =  totalShippingFee / selectedItems.length ;
+        
+        // Update each selected item's shipping fee and total price
+        const updatedItems = checkedItems.map(item => ({
+          ...item,
+          shippingFee: shippingFeePerItem,
+          total_price: item.total_price + shippingFeePerItem
+        }));
+        
+        orderMutation.mutate(updatedItems)
+    })
+        
+   
    
   };
 
-  console.log(selectedItems)
  
 
   if (isLoading) {
@@ -147,7 +162,7 @@ export default function Home() {
         {products.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-500 text-lg mb-4">Your cart is empty</div>
-            <Button onClick={() => router.push("/products")}>
+            <Button onClick={() => router.push("/pages/customerPage")}>
               Continue Shopping
             </Button>
           </div>
