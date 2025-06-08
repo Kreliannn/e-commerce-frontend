@@ -14,8 +14,52 @@ import { useRef } from "react";
 import { getMonthName } from "@/app/utils/customFunction";
 import { getTotalSales } from "@/app/utils/customFunction";
 
+interface ProductData {
+  product_id: string
+  total_sales: number
+  total_quantity: number
+  img: string
+  product_name: string,
+  color : string
+}
+
+
+const formatData =  ( data : getOrderInterface[]) => {
+  const orders = data;
+  const completedOrders = orders.filter(order => order.status === "completed");
+
+  const productSales = completedOrders.reduce((acc, order) => {
+    const productId = order.product_id ;
+
+    if (typeof productId === "string" && order.product_name && order.img) {
+      if (!acc[productId]) {
+        acc[productId] = {
+          product_id: productId,
+          total_sales: 0,
+          total_quantity: 0,
+          img : order.img ,
+          product_name : order.product_name,
+          color : order.color
+        };
+      }
+
+      acc[productId].total_sales += ( order.total_price || 0);
+      acc[productId].total_quantity += ( order.quantity || 0);
+    }
+
+    return acc;
+  }, {} as Record<string, { product_id: string; total_sales: number; total_quantity: number, img : string, product_name : string, color : string }>);
+
+  return Object.values(productSales);
+};
+
+
+
+
+
 export default function SalesTable() {
   const [orders, setOrders] = useState<getOrderInterface[]>([]);
+  const [chartData, setChartData] = useState<ProductData[]>([]);
   const [productChartData, setProductChartData] = useState<getOrderInterface[]>([]);
   const [selectedMonthChart, setSelectedMonthChart] = useState("");
   const [filteredOrders, setFilteredOrders] = useState<getOrderInterface[]>([]);
@@ -50,8 +94,11 @@ export default function SalesTable() {
       const rawData: getOrderInterface[] = data.data;
       const completedOrders: getOrderInterface[] = rawData.filter((item: getOrderInterface): boolean => item.status === "completed");
       setOrders(completedOrders);
+      setChartData(formatData(completedOrders))
     }
   }, [data]);
+
+  console.log(chartData)
 
   // Filter orders based on selected year and month
   useEffect(() => {
@@ -71,7 +118,7 @@ export default function SalesTable() {
           return orderMonth === selectedMonth;
         });
       }
-
+      setChartData(formatData(filtered))
       setFilteredOrders(filtered);
     }
   }, [orders, selectedYear, selectedMonth]);
@@ -98,7 +145,7 @@ export default function SalesTable() {
     setSelectedYear("2025")
     setSelectedMonth(monthValue[0].value)
     setSelectedMonthChart(month)
-    
+    setChartData(formatData(filteredData))
     setProductChartData(filteredData)
     setToggle(false)
   }
@@ -313,6 +360,37 @@ export default function SalesTable() {
               <h1> Total Sales : <span className="font-bold"> ₱{getTotalSales(filteredOrders)} </span> </h1>
         </div>
 
+        <div className="hidden print:block">
+            <h1 className="mt-10 mb-3 font-bold text-2xl"> Product Performance Report </h1>
+
+            <Table className="print-table bg-white shadow-lg rounded-lg">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Product</TableHead>
+                  <TableHead>Color</TableHead>
+                  <TableHead>Item Sold</TableHead>
+                  <TableHead>Total Sales</TableHead>
+                  <TableHead className="hidden">a</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[...chartData]
+                  .sort((a, b) => b.total_sales - a.total_sales)
+                  .map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.product_name}</TableCell>
+                      <TableCell>{item.color}</TableCell>
+                      <TableCell>{item.total_quantity}</TableCell>
+                      <TableCell>₱{item.total_sales.toLocaleString()}</TableCell>
+                      <TableCell className="hidden">a</TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </div>
+
+       <h1 className=" mt-10 mb-3 font-bold text-2xl hidden print:block"> Transaction Record </h1>
+
         <Table className="print-table bg-white shadow-lg rounded-lg">
           <TableHeader>
             <TableRow>
@@ -349,7 +427,7 @@ export default function SalesTable() {
 
         <div className="print-footer">
           <div className="print-total">
-            Total Orders: {filteredOrders.length} | Grand Total: ₱{getTotalSales(filteredOrders).toFixed(2)}
+            Total Orders: {filteredOrders.length} | Grand Total: ₱{getTotalSales(filteredOrders).toLocaleString()}
           </div>
    
         </div>
