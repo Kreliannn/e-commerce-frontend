@@ -227,37 +227,37 @@ export default function Home() {
       {/* Fixed Bottom Checkout Bar */}
       {products.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4">
-          <div className="container mx-auto flex justify-between items-center">
-            <div className="flex items-center space-x-4">     
-
-              <div className="text-lg font-bold ms-10">
-                Price: <span className="text-green-800"> ₱{totalProductPrice()} </span>
-              </div>
-
-              <div className="text-lg font-bold ">
-                Quantity: <span className="text-green-800"> {totalSelectedQuantity()} </span>
-              </div>
-
-              <div className="text-lg font-bold ">
-                Shipping Fee: <span className="text-green-800"> ₱{totalShippingFee.toLocaleString()} </span>
-              </div>
-
-              <div className="text-lg font-bold ">
-                Total: <span className="text-green-500"> ₱{totalSelectedPrice} </span>
-              </div>
-
-
-            </div>
+        <div className="container mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
             
+            {/* Info Group */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-2 sm:space-y-0 w-full sm:w-auto">
+            <div className="text-lg font-bold">
+                Price: <span className="text-green-800">₱{totalProductPrice()}</span>
+            </div>
+            <div className="text-lg font-bold">
+                Quantity: <span className="text-green-800">{totalSelectedQuantity()}</span>
+            </div>
+            <div className="text-lg font-bold">
+                Shipping Fee: <span className="text-green-800">₱{totalShippingFee.toLocaleString()}</span>
+            </div>
+            <div className="text-lg font-bold">
+                Total: <span className="text-green-500">₱{totalSelectedPrice}</span>
+            </div>
+            </div>
+
+            {/* Checkout Button */}
+            <div className="w-full sm:w-auto">
             <Button
-              onClick={handleCheckout}
-              disabled={selectedItems.length === 0}
-              className="px-8 py-2 "
+                onClick={handleCheckout}
+                disabled={selectedItems.length === 0}
+                className="w-full sm:w-auto px-8 py-2"
             >
-              Checkout ({selectedItems.length})
+                Checkout ({selectedItems.length})
             </Button>
-          </div>
+            </div>
         </div>
+        </div>
+
       )}
     </div>
   );

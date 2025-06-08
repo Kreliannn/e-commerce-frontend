@@ -261,7 +261,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
           <Button 
             onClick={() => handleOrder("cart")}
             disabled={!selectedSize || quantity > getStockForSize(selectedSize) || quantity < 1}
-            className="w-2/6"
+            className="w-full md:w-2/6"
           >
             Add To Cart
           </Button>
@@ -269,7 +269,7 @@ export function OrderButton({ product, setProduct }: { product: getProductInterr
             type="submit" 
             onClick={() => handleOrder("order")}
             disabled={!selectedSize || quantity > getStockForSize(selectedSize) || quantity < 1}
-            className="w-4/6 "
+            className="w-full md:w-4/6 "
           >
             Order Now
           </Button>

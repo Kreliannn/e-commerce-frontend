@@ -83,6 +83,8 @@ export default function SalesTable() {
 
   const handleMonthChange = (month: string) => {
     setSelectedMonth(month);
+    if(month != "all") handleSelectBarMonth(getMonthName(month) as string)
+    
   };
 
   const handleSelectBarMonth = ( month : string) => {
@@ -244,20 +246,8 @@ export default function SalesTable() {
       <Navbar />
       <br />
 
-      <div className="w-[900px] flex gap-10 m-auto ">
-        {(!toggle) ? <Button onClick={handleCloseChart}> Back to monthly Sales Chart </Button> : null}
-      </div>
-
-      <br />
-
-      <div className="w-[900px] h-[500px] m-auto ">
-        {(toggle) ? <MonthlySalesChart data={orders} handleSelectBarMonth={handleSelectBarMonth}/> : <ProductSalesChart productChartData={productChartData} selectedMonth={selectedMonthChart} />}
-      </div>
-
-      <br /><br /><br /> <br /><br /> <br /><br />
-
-      {/* Filter Section */}
-      <div className="w-[900px] m-auto mb-6">
+         {/* Filter Section */}
+      <div className="w-[900px] m-auto ">
         <div className="flex gap-4 items-center  p-4 rounded-lg shadow-lg bg-stone-50">
           <Button onClick={handlePrint}>
                 Print Report
@@ -299,6 +289,17 @@ export default function SalesTable() {
           </div>
         </div>
       </div>
+
+  
+      <br />
+
+      <div className="w-[900px] h-[500px] m-auto ">
+        {(selectedMonth == "all") ? <MonthlySalesChart data={filteredOrders} handleSelectBarMonth={handleSelectBarMonth}/> : <ProductSalesChart productChartData={productChartData} selectedMonth={selectedMonthChart} />}
+      </div>
+
+      <br /><br /><br /> <br /><br /> <br /><br />
+
+   
       
       {/* sales report container */}
       <div className="sales-report-container m-auto w-[900px] shadow-lg">
