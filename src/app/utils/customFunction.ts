@@ -27,8 +27,8 @@ export const addFeeBasedOnSize = ( price : number, size : string ) => {
 
 export const getShippingFee = ( quantity : number  ) => {
     let fee = 0
-
-    if(quantity >= 50) fee = 200
+    if(quantity == 0) fee = 0
+    else if(quantity >= 50) fee = 200
     else if(quantity >= 33) fee = 160
     else if(quantity >= 20) fee = 120
     else fee = 70

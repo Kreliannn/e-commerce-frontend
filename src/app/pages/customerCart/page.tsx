@@ -13,14 +13,14 @@ import useUserStore from "@/app/store/userStore";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
-
+import { getShippingFee } from "@/app/utils/customFunction";
 
 export default function Home() {
   const router = useRouter();
   const { _id } = useUserStore();
   
   const [products, setProducts] = useState<getCartInterface[]>([]);
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [selectedItems, setSelectedItems] = useState<getCartInterface[]>([]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["cart"],
@@ -38,32 +38,68 @@ export default function Home() {
     }
   }, [data]);
 
-  const handleSelectItem = (productId: string, checked: boolean) => {
+  const handleSelectItem = (product: getCartInterface, checked: boolean) => {
     if (checked) {
-      setSelectedItems(prev => [...prev, productId]);
+      setSelectedItems(prev => [...prev, product]);
     } else {
-      setSelectedItems(prev => prev.filter(id => id !== productId));
+      setSelectedItems(prev => prev.filter(id => id !== product));
     }
   };
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedItems(products.map(product => product.grouped_id || product.product_id));
+      setSelectedItems(products);
     } else {
       setSelectedItems([]);
     }
   };
 
-  const handleCheckout = () => {
-    const checkedItems = products.filter(product => 
-      selectedItems.includes(product.grouped_id || product.product_id)
-    );
-    console.log("Checked items for checkout:", checkedItems);
+  // Calculate total quantity of selected items
+  const totalSelectedQuantity = () => {
+    let quantity = 0
+    selectedItems.forEach((item) => {
+        quantity += item.quantity
+    })
+    return quantity
+  }
+
+  // Calculate total shipping fee based on total quantity
+  const totalShippingFee = getShippingFee(totalSelectedQuantity());
+
+  // Calculate total price of selected items (without shipping)
+  const totalProductPrice = () => {
+    let price = 0
+    selectedItems.forEach((item) => {
+        price += item.total_price
+    })
+    return price
+  }
+  // Calculate final total (product price + shipping fee)  
+  const totalSelectedPrice = totalProductPrice() + totalShippingFee;
+
+  const handleCheckout = async () => {
+
+    if(selectedItems.length == 0) return errorAlert("select item first")
+        
+    const checkedItems = selectedItems;
+    
+    // Calculate shipping fee per item (total shipping fee divided by number of selected items)
+    const shippingFeePerItem =  totalShippingFee / selectedItems.length ;
+    
+    // Update each selected item's shipping fee and total price
+    const updatedItems = checkedItems.map(item => ({
+      ...item,
+      shippingFee: shippingFeePerItem,
+      total_price: item.total_price + shippingFeePerItem
+    }));
+    
+
+    console.log(updatedItems)
+   
   };
 
-  const totalSelectedPrice = products
-    .filter(product => selectedItems.includes(product.grouped_id || product.product_id))
-    .reduce((sum, product) => sum + product.total_price + product.shippingFee, 0);
+  console.log(selectedItems)
+ 
 
   if (isLoading) {
     return (
@@ -145,19 +181,24 @@ export default function Home() {
                     
                     <div className="text-right">
                       <div className="font-bold text-lg text-green-500">
-                        ₱{(product.total_price + product.shippingFee).toLocaleString()}
+                        ₱{product.total_price.toLocaleString()}
                       </div>
                       <div className="text-sm text-gray-500">
-                        Total
+                        Product Total
                       </div>
                     </div>
 
 
                     <Checkbox
-                      checked={selectedItems.includes(product.grouped_id || product.product_id)}
+                      checked={selectedItems.map(i => i._id).includes(product._id)}
                       className="w-7 h-7"
                       onCheckedChange={(checked : boolean) => 
-                        handleSelectItem(product.grouped_id || product.product_id, checked )
+                      {
+                        handleSelectItem(product, checked )
+                        console.log("selected")
+                        console.log(product)
+                      }
+                       
                       }
                     />
                   </div>
@@ -172,19 +213,31 @@ export default function Home() {
       {products.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-4">
           <div className="container mx-auto flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
-                Selected: {selectedItems.length} item(s)
-              </span>
-              <div className="text-lg font-bold ">
-                Total: <span className="text-green-500"> ₱{totalSelectedPrice.toLocaleString()} </span>
+            <div className="flex items-center space-x-4">     
+
+              <div className="text-lg font-bold ms-10">
+                Price: <span className="text-green-800"> ₱{totalProductPrice()} </span>
               </div>
+
+              <div className="text-lg font-bold ">
+                Quantity: <span className="text-green-800"> {totalSelectedQuantity()} </span>
+              </div>
+
+              <div className="text-lg font-bold ">
+                Shipping Fee: <span className="text-green-800"> ₱{totalShippingFee.toLocaleString()} </span>
+              </div>
+
+              <div className="text-lg font-bold ">
+                Total: <span className="text-green-500"> ₱{totalSelectedPrice} </span>
+              </div>
+
+
             </div>
             
             <Button
               onClick={handleCheckout}
               disabled={selectedItems.length === 0}
-              className="px-8 py-2"
+              className="px-8 py-2 "
             >
               Checkout ({selectedItems.length})
             </Button>
